@@ -3,7 +3,7 @@ import Chessboard from 'chessboardjsx';
 import Chess from "chess.js";
 import Records from '../../components/Records';
 
-// import { Container } from './styles';
+import { Container } from './styles';
 
 function Board() {
   const [game, setGame] = useState(null);
@@ -120,7 +120,7 @@ function Board() {
   }
 
   return (
-    <div>
+    <Container>
       <Chessboard 
         id="chess"
         width={500}
@@ -130,8 +130,17 @@ function Board() {
         onMouseOverSquare={onMouseOverSquare}
         onMouseOutSquare={onMouseOutSquare}
         squareStyles={squareStyles}
+        boardStyle={{
+          borderRadius: '10px'
+        }}
+        lightSquareStyle={{
+          backgroundColor: '#EEEED2'
+        }}
+        darkSquareStyle={{
+          backgroundColor: '#769656'
+        }}
       />
-    </div>
+    </Container>
   );
 }
 
