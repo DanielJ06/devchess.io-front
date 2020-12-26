@@ -140,6 +140,8 @@ function Board() {
           backgroundColor: '#769656'
         }}
       />
+
+      <Records records={history} />
     </Container>
   );
 }

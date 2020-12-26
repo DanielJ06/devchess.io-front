@@ -1,14 +1,14 @@
 import React from 'react';
 
-// import { Container } from './styles';
+import { Container, Label } from './styles';
 
 const Records = ({ records }) => {
   return (
-    <div>
+    <Container>
       {records.map(record => (
-        <span>{record.san}</span>
+        <Label playerColor={record.color} >{record.san}</Label>
       ))}
-    </div>
+    </Container>
   );
 }
 
