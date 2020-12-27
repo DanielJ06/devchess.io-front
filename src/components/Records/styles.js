@@ -8,7 +8,9 @@ export const Container = styled.div`
 
   margin-left: 25px;
   padding: 15px;
+  overflow: auto;
 
+  max-height: 500px;
   width: 350px;
   border-radius: 15px;
 `;
