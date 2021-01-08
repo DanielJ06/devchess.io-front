@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Chessboard from 'chessboardjsx';
 import Chess from "chess.js";
+import { useParams } from 'react-router-dom';
 import Records from '../../components/Records';
-
 import { Container } from './styles';
+const socket  = require('../../services/socket').socket;
 
 function Board() {
   const [game, setGame] = useState(null);
@@ -14,6 +15,8 @@ function Board() {
   const [turn, setTurn] = useState('');
   const [fen, setFen] = useState('start')
 
+  const { gameId } = useParams();
+
   useEffect(() => {
     function startGame() {
       const chessgame = new Chess();
@@ -22,36 +25,44 @@ function Board() {
     startGame();
   }, []);
 
-  const onDrop = ({ sourceSquare, targetSquare }) => {
-    let move = game.move({
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: 'q'
-    });
-
-    const checkmate = game.in_checkmate();
-    const turn = game.turn();
-
-    setTurn(turn);
-
-    // if (turn === 'b') {
-    //   setDraggable(false);
-    // } else {
-    //   setDraggable(true);
-    // }
-
-    if (checkmate) {
-      if (turn === 'b') {
-        alert('White wins')
-      } else {
-        alert('Black wins')
+  useEffect(() => {
+    socket.on('move', data => {
+      if (game) {
+        onDrop({sourceSquare:data.ss, targetSquare:data.ts});
       }
-    }
+    })
+  }, [game])
 
-    if (move === null) return;
-    setFen(game.fen);
-    setHistory(game.history({verbose: true}));
-    setSquareStyles(squareStyling(history, pieceSquare))
+  const onDrop = ({ sourceSquare, targetSquare }) => {
+    if (game) {
+      let move = game.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: 'q'
+      });
+  
+      const checkmate = game.in_checkmate();
+      const turn = game.turn();
+  
+      
+  
+      if (checkmate) {
+        if (turn === 'b') {
+          alert('White wins')
+        } else {
+          alert('Black wins')
+        }
+      }
+  
+      if (move === null) return;
+  
+      setFen(game.fen);
+      setHistory(game.history({verbose: true}));
+      setSquareStyles(squareStyling(history, pieceSquare))
+      setDraggable(isDraggable === false ? true : false);
+      socket.emit('playerMove', {ss: sourceSquare, ts: targetSquare, gameId: gameId });
+      console.log(isDraggable);
+    }
   }
 
   const squareStyling = (pieceSquare, history) => {
@@ -125,7 +136,7 @@ function Board() {
         id="chess"
         width={500}
         position={fen}
-        draggable={isDraggable}
+        draggable={true}
         onDrop={onDrop}
         onMouseOverSquare={onMouseOverSquare}
         onMouseOutSquare={onMouseOutSquare}
