@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import shortid from 'shortid';
 const socket  = require('../../services/socket').socket
 
@@ -6,11 +7,10 @@ const Home = () => {
   const [hostUsername, setHostUsername] = useState('');
   const [gameId, setGameId] = useState('');
   const [username, setUsername] = useState('');
-  const [started, setStarted] = useState(false);
+
+  const history = useHistory();
 
   useEffect(() => {
-    socket.on('start', () => setStarted(true));
-
     socket.on('status', data => console.log(data))
   }, [])
 
@@ -18,6 +18,7 @@ const Home = () => {
     const gameId = shortid.generate();
     console.log(gameId);
     socket.emit('createNewGame', {gameId:gameId, username: hostUsername});
+    history.push(`/matchmaking/${gameId}`);
   }
 
   const handleJoin = () => {
@@ -25,15 +26,11 @@ const Home = () => {
       gameId: gameId,
       username: username
     })
+    history.push(`/bgame/${gameId}`);
   }
 
   return (
     <div>
-      {started ? (
-        <h1>Game started</h1>
-      ) : (
-        <h1>Not started</h1>
-      )}
       <div>
         <input 
           type="text" 
